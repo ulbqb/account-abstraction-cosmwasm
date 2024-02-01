@@ -34,9 +34,11 @@ library = []
 
 [dependencies]
 cosmwasm-schema = { workspace = true }
-cosmwasm-std = { workspace = true }
+cosmwasm-std = { workspace = true, features = ["stargate"] }
 cw-storage-plus = { workspace = true }
 cw2 = { workspace = true }
+finschia-std = { git = "https://github.com/Finschia/finschia-wasm.git", branch = "fix/support_rust1-69" }
+prost = "0.12.3"
 schemars = "0.8.15"
 serde = { version = "1.0.189", default-features = false, features = ["derive"] }
 thiserror = { version = "1.0.49" }
