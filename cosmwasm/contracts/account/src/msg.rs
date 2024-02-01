@@ -6,7 +6,9 @@ pub struct InstantiateMsg {}
 
 /// Message type for `execute` entry_point
 #[cw_serde]
-pub enum ExecuteMsg {}
+pub enum ExecuteMsg {
+    SendTx { tx: Vec<u8> },
+}
 
 /// Message type for `migrate` entry_point
 #[cw_serde]

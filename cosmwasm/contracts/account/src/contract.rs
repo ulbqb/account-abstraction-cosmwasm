@@ -1,7 +1,11 @@
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Reply, Response, StdResult};
+use cosmwasm_std::{
+    Binary, CosmosMsg, Deps, DepsMut, Env, MessageInfo, Reply, Response, StdResult,
+};
 use cw2::set_contract_version;
+use finschia_std::types::cosmos::tx::v1beta1::{TxBody, TxRaw};
+use prost::Message;
 
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg};
@@ -45,17 +49,39 @@ pub fn migrate(_deps: DepsMut, _env: Env, msg: MigrateMsg) -> Result<Response, C
 /// Handling contract execution
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(
-    _deps: DepsMut,
-    _env: Env,
-    _info: MessageInfo,
+    deps: DepsMut,
+    env: Env,
+    info: MessageInfo,
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
     match msg {
-        // Find matched incoming message variant and execute them with your custom logic.
-        //
-        // With `Response` type, it is possible to dispatch message to invoke external logic.
-        // See: https://github.com/CosmWasm/cosmwasm/blob/main/SEMANTICS.md#dispatching-messages
+        ExecuteMsg::SendTx { tx } => execute_send_tx(deps, env, info, tx),
     }
+}
+
+pub fn execute_send_tx(
+    _deps: DepsMut,
+    _env: Env,
+    _info: MessageInfo,
+    tx_bytes: Vec<u8>,
+) -> Result<Response, ContractError> {
+    // TODO: decode tx
+    let tx_raw = TxRaw::decode(tx_bytes.as_slice()).expect("cannot decode tx raw");
+    // TODO: validate signature
+    // verify(signature, nonce, messages)
+    // TODO: validate nonce
+    // validate(nonce)
+    // TODO: set messages
+    let mut res = Response::new();
+    res = res.add_attribute("action", "send_tx");
+    let tx_body = TxBody::decode(tx_raw.body_bytes.as_slice()).expect("cannot decode tx body");
+    for msg in tx_body.messages.iter() {
+        res = res.add_message(CosmosMsg::Stargate {
+            type_url: msg.clone().type_url,
+            value: msg.clone().value.into(),
+        });
+    }
+    Ok(res)
 }
 
 /// Handling contract query
