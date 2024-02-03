@@ -18,13 +18,13 @@ pub enum MigrateMsg {}
 #[cw_serde]
 #[derive(QueryResponses)]
 pub enum QueryMsg {
-    // This example query variant indicates that any client can query the contract
-    // using `YourQuery` and it will return `YourQueryResponse`
-    // This `returns` information will be included in contract's schema
-    // which is used for client code generation.
-    //
-    // #[returns(YourQueryResponse)]
-    // YourQuery {},
+    #[returns(SignerInfoResponse)]
+    SignerInfo {},
+}
+
+#[cw_serde]
+pub struct SignerInfoResponse {
+    pub sequence: u64,
 }
 
 // We define a custom struct for each query response
