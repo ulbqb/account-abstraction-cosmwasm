@@ -1,2 +1,8 @@
 # account-abstraction-cosmwasm
-Account Abstraction Cosmwasm Project
+
+demo
+
+```bash
+bash build.sh
+bash e2e.sh
+```
